@@ -1,0 +1,79 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="mb-4">
+        <strong>--TYPES--</strong><br><br>
+        <button class="btn btn-sm d-block mb-1" [class.btn-primary]="selectedType === 'all'" (click)="onSelectType('all')">
+          all types ({{ items.length }})
+        </button>
+        <button *ngFor="let t of types"
+                class="btn btn-sm d-block mb-1"
+                [class.btn-primary]="selectedType === t.name"
+                (click)="onSelectType(t.name)">
+           {{ t.name }} ({{ t.count }}) 
+        </button>
+      </div>
+
+      <div class="mb-4">
+        <button class="btn btn-outline-secondary w-100" (click)="onToggleView()">
+          Toggle Button ({{ viewMode === 'list' ? 'list' : 'grid' }})
+        </button>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="mb-3 d-flex flex-wrap gap-2">
+        <input type="text"
+               class="form-control"
+               style="max-width: 200px;"
+               placeholder="Search By Name Or Yaer"
+               [(ngModel)]="searchTerm"
+               (input)="onSearch(searchTerm)" />
+
+        <button class="btn btn-outline-secondary" (click)="onClear()">Clear</button>
+        <button class="btn btn-outline-secondary" (click)="onRefresh()">Refresh</button>
+        <button class="btn btn-outline-secondary" (click)="onSortToggle()">
+          Sort By Name{{ sortAsc ? '(A-Z)' : '(Z-A)' }}
+        </button>
+      </div>
+
+      <div class="row" [ngClass]="{ 'gy-3': viewMode === 'grid' }">
+        <div *ngFor="let item of filteredItems"
+             [ngClass]="viewMode === 'grid' ? 'col-md-4' : 'col-12'">
+          
+          <div class="border p-3 d-flex"
+               [ngClass]="{
+                 'flex-column': viewMode === 'list',
+                 'flex-row': viewMode === 'grid'
+               }">
+
+            <div class="me-3 mb-2" style="min-width: 100px;">
+              <img *ngIf="item.Poster !== 'N/A'" [src]="item.Poster" alt="{{ item.Title }}" width="100" height="130" style="object-fit: cover; cursor: pointer;"
+                   (click)="goToDetails(item.imdbID)" />
+            </div>
+
+            <div>
+              <h5 *ngIf="editingId !== item.imdbID"
+                  (click)="editItem(item)"
+                  style="cursor: pointer;">
+                {{ item.Title }}
+              </h5>
+
+              <input *ngIf="editingId === item.imdbID"
+                     type="text"
+                     class="form-control mb-2"
+                     [value]="item.Title"
+                     #editInput
+                     (blur)="onTitleBlur(item, editInput.value)"
+                     (keydown.enter)="onTitleBlur(item, editInput.value)"
+                     autofocus />
+
+              <p>Year: {{ item.Year | slice:0:4 }}</p>
+              <p>Type: {{ item.Type }}</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
